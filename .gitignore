@@ -1,0 +1,39 @@
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Cypress (E2E tests kept local)
+/cypress
+cypress.config.ts
+
+# Offline deployment bundles
+/dist
+
+# Local / private files
+/examples
+/.github
+.claude
+.vscode
+CLAUDE.md
+*.drawio
+*.drawio.bkp

@@ -1,0 +1,143 @@
+@import 'tailwindcss';
+
+/* Theme CSS Variables */
+:root {
+  /* hsl (fallback color) */
+  --bg-dark: hsl(230 100% 3%);
+  --bg: hsl(221 83% 6%);
+  --bg-light: hsl(217 59% 10%);
+  --text: hsl(216 100% 99%);
+  --text-muted: hsl(216 60% 74%);
+  --highlight: hsl(217 34% 42%);
+  --border: hsl(217 44% 31%);
+  --border-muted: hsl(217 64% 20%);
+  --primary: hsl(216 78% 74%);
+  --secondary: hsl(37 56% 61%);
+  --danger: hsl(9 42% 65%);
+  --warning: hsl(51 29% 53%);
+  --success: hsl(148 27% 56%);
+  --info: hsl(217 46% 66%);
+  /* oklch */
+  --bg-dark: oklch(0.1 0.04 259);
+  --bg: oklch(0.15 0.04 259);
+  --bg-light: oklch(0.2 0.04 259);
+  --text: oklch(0.96 0.08 259);
+  --text-muted: oklch(0.76 0.08 259);
+  --highlight: oklch(0.5 0.08 259);
+  --border: oklch(0.4 0.08 259);
+  --border-muted: oklch(0.3 0.08 259);
+  --primary: oklch(0.76 0.1 259);
+  --secondary: oklch(0.76 0.1 79);
+  --danger: oklch(0.7 0.08 30);
+  --warning: oklch(0.7 0.08 100);
+  --success: oklch(0.7 0.08 160);
+  --info: oklch(0.7 0.08 260);
+}
+
+body.light {
+  /* hsl (fallback color) */
+  --bg-dark: hsl(216 100% 92%);
+  --bg: hsl(216 100% 97%);
+  --bg-light: hsl(216 100% 100%);
+  --text: hsl(229 100% 8%);
+  --text-muted: hsl(217 44% 31%);
+  --highlight: hsl(216 100% 100%);
+  --border: hsl(216 33% 54%);
+  --border-muted: hsl(216 46% 66%);
+  --primary: hsl(217 55% 31%);
+  --secondary: hsl(42 100% 15%);
+  --danger: hsl(8 32% 41%);
+  --warning: hsl(51 46% 30%);
+  --success: hsl(150 37% 33%);
+  --info: hsl(217 34% 43%);
+  /* oklch */
+  --bg-dark: oklch(0.92 0.04 259);
+  --bg: oklch(0.96 0.04 259);
+  --bg-light: oklch(1 0.04 259);
+  --text: oklch(0.15 0.08 259);
+  --text-muted: oklch(0.4 0.08 259);
+  --highlight: oklch(1 0.08 259);
+  --border: oklch(0.6 0.08 259);
+  --border-muted: oklch(0.7 0.08 259);
+  --primary: oklch(0.4 0.1 259);
+  --secondary: oklch(0.4 0.1 79);
+  --danger: oklch(0.5 0.08 30);
+  --warning: oklch(0.5 0.08 100);
+  --success: oklch(0.5 0.08 160);
+  --info: oklch(0.5 0.08 260);
+}
+
+/* Tailwind theme mapping */
+@theme inline {
+  --color-bg-dark: var(--bg-dark);
+  --color-bg: var(--bg);
+  --color-bg-light: var(--bg-light);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-highlight: var(--highlight);
+  --color-border: var(--border);
+  --color-border-muted: var(--border-muted);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-info: var(--info);
+}
+
+/* Base styles */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    @apply bg-bg text-text;
+  }
+
+  html {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}

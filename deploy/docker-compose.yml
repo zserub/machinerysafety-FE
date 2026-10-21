@@ -1,0 +1,144 @@
+# Machinery Safety - offline deployment
+#
+# Image names (@...@) are filled in by pack.sh. All settings come from .env.
+# pull_policy: never -> images must come from images.tar.gz (docker load),
+# nothing is ever fetched from the internet.
+
+services:
+  frontend:
+    image: "@FRONTEND_IMAGE@"
+    pull_policy: never
+    container_name: ms_frontend
+    restart: unless-stopped
+    environment:
+      PUBLIC_API_URL: http://backend:8080
+      HOST: 0.0.0.0
+      PORT: 3000
+      # Only needed behind an HTTPS reverse proxy (empty = use the request's own address)
+      ORIGIN: ${ORIGIN:-}
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${FRONTEND_PORT:-80}:3000"
+    networks: [ms-network]
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  backend:
+    image: "@BACKEND_IMAGE@"
+    pull_policy: never
+    container_name: ms_backend
+    restart: unless-stopped
+    environment:
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_SCHEMA: ${DB_SCHEMA:-eng}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      INITIAL_ADMIN_USERNAME: ${INITIAL_ADMIN_USERNAME:-}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      MINIO_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-photos}
+      METABASE_URL: http://metabase:3000
+      METABASE_PUBLIC_URL: ${METABASE_PUBLIC_URL}
+      METABASE_API_KEY: ${METABASE_API_KEY:-}
+      RUN_METABASE_SETUP: ${RUN_METABASE_SETUP:-false}
+      METABASE_DATABASE_ID: ${METABASE_DATABASE_ID:-3}
+      SESSION_KEY: ${SESSION_KEY}
+      SESSION_SECURE: ${SESSION_SECURE:-false}
+      CORS_ALLOWED_ORIGINS: ${APP_URL}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE_PATH: /app/logs/backend.log
+    volumes:
+      - ./data/logs:/app/logs
+    networks: [ms-network]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  postgres:
+    image: "@POSTGRES_IMAGE@"
+    pull_policy: never
+    container_name: ms_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks: [ms-network]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  metabase:
+    image: "@METABASE_IMAGE@"
+    pull_policy: never
+    container_name: ms_metabase
+    restart: unless-stopped
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: postgres
+      MB_DB_PORT: 5432
+      MB_DB_DBNAME: metabase
+      MB_DB_USER: ${POSTGRES_USER}
+      MB_DB_PASS: ${POSTGRES_PASSWORD}
+      MB_SITE_URL: ${METABASE_PUBLIC_URL}
+      # No internet: don't phone home
+      MB_CHECK_FOR_UPDATES: "false"
+      MB_ANON_TRACKING_ENABLED: "false"
+      JAVA_OPTS: ${METABASE_JAVA_OPTS:--Xmx1g}
+    # Browsers load the statistics dashboard directly from Metabase (iframe)
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${METABASE_PORT:-3000}:3000"
+    networks: [ms-network]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  minio:
+    image: "@MINIO_IMAGE@"
+    pull_policy: never
+    container_name: ms_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001" --address ":9000"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    # The backend creates the photo bucket on startup
+    volumes:
+      - ./data/minio:/data
+    # Console only reachable from the server itself (ssh tunnel if needed)
+    ports:
+      - "127.0.0.1:9001:9001"
+    networks: [ms-network]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+networks:
+  ms-network:
+    driver: bridge

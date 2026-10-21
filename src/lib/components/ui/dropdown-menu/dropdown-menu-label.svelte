@@ -1,0 +1,24 @@
+<script lang="ts">
+	import { cn } from "$lib/utils";
+	import type { Snippet } from "svelte";
+
+	interface Props {
+		class?: string;
+		inset?: boolean;
+		children?: Snippet;
+	}
+
+	let {
+		class: className,
+		inset = false,
+		children,
+		...restProps
+	}: Props = $props();
+</script>
+
+<div
+	class={cn("px-2 py-1.5 text-sm font-semibold text-text-muted", inset && "pl-8", className)}
+	{...restProps}
+>
+	{@render children?.()}
+</div>

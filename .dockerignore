@@ -1,0 +1,13 @@
+node_modules
+.svelte-kit
+build
+.env*
+*.log
+.git
+.github
+.vscode
+coverage
+examples
+*.md
+dist
+deploy
