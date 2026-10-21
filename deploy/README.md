@@ -293,13 +293,13 @@ On a machine with internet access and Docker, with both repositories checked
 out side by side:
 
 ```bash
-cd MachinerySafety_frontend
+cd machinerysafety-FE
 deploy/pack.sh
 # -> dist/machinerysafety-<version>.zip  (README.md + .tar.gz + SHA256SUMS)
 ```
 
 The script builds the frontend and backend images from the current checkouts.
-The backend is expected at `../MachinerySafety_backend`; override that with
+The backend is expected at `../machinerysafety-BE`; override that with
 `BACKEND_DIR`. It pulls Postgres and Metabase, uses the locally cached MinIO
 image if the pull fails, and saves everything into one archive. That archive,
 this README and a checksum file are wrapped in the delivery zip.

@@ -10,7 +10,7 @@ set -euo pipefail
 
 DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
 FRONTEND_DIR="$(dirname "$DEPLOY_DIR")"
-BACKEND_DIR="${BACKEND_DIR:-$(dirname "$FRONTEND_DIR")/MachinerySafety_backend}"
+BACKEND_DIR="${BACKEND_DIR:-$(dirname "$FRONTEND_DIR")/machinerysafety-BE}"
 
 PLATFORM="${PLATFORM:-linux/amd64}"
 VITE_LOG_LEVEL="${VITE_LOG_LEVEL:-warn}"
